@@ -1,0 +1,9 @@
+SMILES,num_confs
+COc1ccc(S(=O)(=O)n2nc(OC(=O)c3ccccc3)cc2N)cc1,73
+Cc1nn(Cc2ccccc2)c(Cl)c1C(=O)OCC(=O)NC(=O)NC12CC3CC(CC(C3)C1)C2,71
+Cc1noc(C(=O)Nc2c(C)nn(Cc3ccccc3)c2C)c1Cl,66
+Cc1ccc(NCC(=O)N/N=C\c2ccc([N+](=O)[O-])o2)cc1,55
+COc1cc(Cl)c(C)cc1NC(=O)CSc1nnc(-c2ccco2)n1CC(C)C,54
+Cc1ccc2c(C)cc(=S)[nH]c2c1,75
+O=C(OC[C@@H]1CCC[NH+]2CCCC[C@H]12)c1cc2ccccc2oc1=O,66
+COc1ccc(OC)c(NC(=O)CSc2nnc3ccc(-c4ccncc4)nn23)c1,41

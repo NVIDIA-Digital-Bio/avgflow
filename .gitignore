@@ -1,0 +1,10 @@
+dit_pairwise_bias/wandb/
+dit_pairwise_bias/test/
+wandb/
+slurm_run_outputs/
+sampling/
+checkpoints/*
+*.ipynb
+*__pycache__/
+*.pyc
+*.pkl
