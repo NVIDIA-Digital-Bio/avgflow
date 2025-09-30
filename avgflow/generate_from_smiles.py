@@ -25,7 +25,7 @@ from nn.model import ConformerFlowTransformer
 from dataloader.jnp_dataloader import SingleGenerationLoader
 from flow_matcher.flow_matcher import FlowMatcher
 from utils.model_utils import tree_stack, load_ckpt_from_pkl, set_lr_scheduler_configs
-from utils.rdkit_utils import add_conformer_to_mol
+from utils.rdkit_utils import add_conformer_to_mol, SMILES_to_safeSMILES
 import optax, diffrax
 import wandb, pickle, compress_pickle, signal
 from functools import partial
@@ -46,11 +46,7 @@ from utils.rdkit_utils import post_hoc_flip_mol
 from rdkit import Chem
 
 def main(args, config):
-    smiles_df = pd.read_csv(args.smiles_csv)
-    smiles_list = smiles_df['SMILES'].tolist()
-    n_confs_list = smiles_df['num_confs'].tolist()
-    total_num_confs_in_csv = sum(n_confs_list)
-    print('Generating %d conformers for %d molecules'%(total_num_confs_in_csv, len(smiles_list)))
+    print('Generating %d conformers for %s'%(args.num_confs, args.smiles))
     # read config file
     print('Generation config:')
     print(config)
@@ -106,94 +102,97 @@ def main(args, config):
     total_num_flip = 0
     key = jax.random.key(config['random_seed'])
 
-    pbar = tqdm(total=total_num_confs_in_csv)
     # Start generation
-    for i, row in smiles_df.iterrows():
-        # print(f'Generating conformers for {row["SMILES"]} ({i+1}/{len(smiles_df)})')
-        smiles = row['SMILES']
-        n_confs = row['num_confs']
-        base_mol = Chem.MolFromSmiles(smiles)
-        base_mol = Chem.AddHs(base_mol)
-        graph = mol2features(base_mol, featurize_mode)
-        # Get a copy of the molecule to generate jraph graphtuple and canonical smiles
-        dataloader = SingleGenerationLoader(
-            graph, 
-            max_n=config['model']['max_n'], 
-            batchsize=batchsize
-        )
-        n_atoms = graph['node_feats'].shape[0]
-        num_batches, remaining = divmod(n_confs, batchsize)
-        if remaining > 0 or num_batches == 0:
-            num_batches += 1
+    base_mol = Chem.MolFromSmiles(args.smiles)
+    base_mol = Chem.AddHs(base_mol)
+    graph = mol2features(base_mol, featurize_mode)
+    # Get number of conformers
+    n_confs = args.num_confs
+    # Get a copy of the molecule to generate jraph graphtuple and canonical smiles
+    dataloader = SingleGenerationLoader(
+        graph, 
+        max_n=config['model']['max_n'], 
+        batchsize=batchsize
+    )
+    n_atoms = graph['node_feats'].shape[0]
+    num_batches, remaining = divmod(n_confs, batchsize)
+    if remaining > 0 or num_batches == 0:
+        num_batches += 1
 
-        generated_mols = []
-        # Generate conformers
+    generated_mols = []
+    # Generate conformers
+    key, sample_key = jax.random.split(key)
+    num_generated = 0
+    pbar = tqdm(total=n_confs, unit='conformers')
+    for _ in range(num_batches):
+        batch = dataloader.get_batch()
+        x1_pred = flow_matcher.generate(
+            model=model, batch=batch, 
+            key=sample_key, 
+            num_steps=n_steps, 
+            t_schedule=t_schedule, t_p=t_p,
+            solver=solver
+        ) # (frames, batchsize, n_atoms, 3) frames = 1 if only_save_last else n_steps
+        for i in range(batchsize):
+            traj = x1_pred[:, i, :n_atoms, :]
+            coordinates = traj[-1]
+            conf_mol = add_conformer_to_mol(base_mol, coordinates)
+            # Post-hoc flip the generated molecule if SMILES does not match ground truth SMILES
+            # Make sure to use the canonical SMILES without hydrogen for the ground truth SMILES
+            conf_mol = post_hoc_flip_mol(gt_smis=args.smiles, gen_mol=conf_mol)
+            generated_mols.append(conf_mol)
+            num_generated += 1
+            pbar.update(1)
+            if num_generated == n_confs:
+                break
         key, sample_key = jax.random.split(key)
-        num_generated = 0
-        # with tqdm(total=n_confs) as pbar:
-        for _ in range(num_batches):
-            batch = dataloader.get_batch()
-            x1_pred = flow_matcher.generate(
-                model=model, batch=batch, 
-                key=sample_key, 
-                num_steps=n_steps, 
-                t_schedule=t_schedule, t_p=t_p,
-                solver=solver
-            ) # (frames, batchsize, n_atoms, 3) frames = 1 if only_save_last else n_steps
-            for i in range(batchsize):
-                traj = x1_pred[:, i, :n_atoms, :]
-                coordinates = traj[-1]
-                conf_mol = add_conformer_to_mol(base_mol, coordinates)
-                # Post-hoc flip the generated molecule if SMILES does not match ground truth SMILES
-                # Make sure to use the canonical SMILES without hydrogen for the ground truth SMILES
-                conf_mol = post_hoc_flip_mol(gt_smis=smiles, gen_mol=conf_mol)
-                generated_mols.append(conf_mol)
-                num_generated += 1
-                pbar.update(1)
-                if num_generated == n_confs:
-                    break
-            key, sample_key = jax.random.split(key)
-
-        # Create the destination directory
-        dst_dir = config['destination_dir']
-        dst_dir = os.path.join(config['destination_dir'], f'{run_name}_{solver}_{t_schedule}_{n_steps}step')
-        os.makedirs(dst_dir, exist_ok=True)
-        # Record the generation config
-        gen_config = {
-            'run_name': run_name,
-            'solver': solver,
-            't_schedule': t_schedule,
-            'n_steps': n_steps,
-            'checkpoint': ckpt_path,
-            'ema': use_ema,
-        }
-        # The output is a dictionary with the following keys:
-        # - smiles: the SMILES string of the molecule
-        # - gen_config: the generation configuration
-        # - mol_with_confs: a list of generated molecules
-        output_dict = {
-            'smiles': smiles,
-            'gen_config': gen_config,
-            'mol_with_confs': generated_mols,
-        }
-        # Save the output dictionary
-        # Replace '/' with '_' in the SMILES string to avoid file name errors
-        safe_smiles = smiles.replace('/', '_')
-        dst = os.path.join(dst_dir, f'{safe_smiles}.pkl')
-        pickle.dump(
-            output_dict, 
-            open(dst, 'wb')
-        )
     pbar.close()
+
+    # Create the destination directory
+    dst_dir = config['output_dir']
+    dst_dir = os.path.join(config['output_dir'], f'{run_name}_{solver}_{t_schedule}_{n_steps}step')
+    os.makedirs(dst_dir, exist_ok=True)
+    # Record the generation config
+    gen_config = {
+        'run_name': run_name,
+        'solver': solver,
+        't_schedule': t_schedule,
+        'n_steps': n_steps,
+        'checkpoint': ckpt_path,
+        'ema': use_ema,
+    }
+    # The output is a dictionary with the following keys:
+    # - smiles: the SMILES string of the molecule
+    # - gen_config: the generation configuration
+    # - mol_with_confs: a list of generated molecules
+    output_dict = {
+        'smiles': args.smiles,
+        'gen_config': gen_config,
+        'mol_with_confs': generated_mols,
+    }
+    # Save the output dictionary
+    safe_smiles = SMILES_to_safeSMILES(args.smiles)
+    dst = os.path.join(dst_dir, f'{safe_smiles}.pkl')
+    pickle.dump(
+        output_dict, 
+        open(dst, 'wb')
+    )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", type=str, help="Path to the config file")
-    parser.add_argument("-s", "--smiles_csv", type=str, help='Path to the CSV file containing SMILES strings and number of conformers to be generated')
+    parser.add_argument("-s", "--smiles", type=str, help='SMILES string')
+    parser.add_argument("-n", "--num_confs", type=int, default=8, help="number of conformers to be generated")
+    parser.add_argument("-o", "--output_dir", type=str, default=None, help='Path to the output directory')
     args = parser.parse_args()
     with open(args.config, "r") as stream:
         config = yaml.safe_load(stream)
+
+    # if output_dir is provided, use it instead of the one in the config file
+    if args.output_dir is not None and args.output_dir != '':
+        config['output_dir'] = args.output_dir
+    
     main(args, config)
     
 

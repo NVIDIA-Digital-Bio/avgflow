@@ -52,3 +52,17 @@ def post_hoc_flip_mol(gt_smis, gen_mol):
     if gen_smis != gt_smis:
         mol = mirror_3d_mol(mol)
     return mol  
+
+def SMILES_to_safeSMILES(smiles: str) -> str:
+    """
+    Replace '/' with '_' in the SMILES string to avoid file name errors.
+    """
+    assert '.' not in smiles, 'Does not support SMILES string contains "."'
+    return smiles.replace('/', '_')
+
+def safeSMILES_to_SMILES(safe_smiles: str) -> str:
+    """
+    Replace '_' with '/' in the SMILES string to avoid file name errors.
+    """
+    assert '.' not in safe_smiles, 'Does not support SMILES string contains "."'
+    return safe_smiles.replace('_', '/')

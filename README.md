@@ -8,12 +8,56 @@ This is the official code repository for the paper titled [Efficient Molecular C
 + We propose to use reflow+distillation to reduce the number of sampling steps of flow-based model for conformer generation and maintain high generation quality.
 + We provide a JAX implementation of the diffusion transformer with pairwise biased attention architecture. It is powerful and scalable for generative modeling of molecules. 
 ## Instalation
+Clone this repository:
+```bash
+git clone https://github.com/NVIDIA-Digital-Bio/avgflow.git
+cd avgflow
+```
+
+Run the following command to install the dependencies:
+```bash
+bash env/setup.sh
+```
 
 ## Pretrained Checkpoint
-
-## Training
+We provide 3 model weights through the NVIDIA NGC, including: 52M DiT trained with AvgFlow objective, 52M DiT finetuned with reflow+distillation for 1-step generation, and 64M DiT trained with AvgFlow objective. Run the following command to download the checkpoints:
+```bash
+bash scripts/download_ckpts.sh
+```
 
 ## Sampling
+The model can be used to generate conformers given: 1. a single SMILES string, or 2. a CSV file containing a batch of SMILES strings and the number of conformers to be generated for each molecule. 
+
+For conformer generation of a single molecule, run:
+```
+python avgflow/generate_from_smiles.py \
+    --config PATH/TO/CONFIG.yaml \
+    --smiles SMILES_STRING \
+    --num_confs N_CONF \
+    --output_dir PATH/TO/OUTPUT/DIRECTORY \
+```
+Example can be found in `example/sampling/example_generate_from_smiles.sh`, which generete 64 conformers for molecule `C#CCNC(=O)C1=C[C@@H](c2ccc(Br)cc2)C[C@@H](OCc2ccc(CO)cc2)O1`.
+
+For conformer generation of a batch of molecules in a csv file, run:
+```
+python avgflow/generate_from_csv.py \
+    --config PATH/TO/CONFIG.yaml \
+    --smiles_csv PATH/TO/SMILES.csv \
+    --output_dir PATH/TO/OUTPUT/DIRECTORY \
+```
+Example can be found in `example/sampling/example_generate_from_csv.sh`, which generate various number of conformers for molecules in `/example/data/toy_gen_csv.csv`. Please follow the format of `/example/data/toy_gen_csv.csv` to construct your own csv for sampling. 
+
+The config yaml files define the model architecture to be initilized and checkpoint to be loaded. We provide 3 config files for the 3 checkpoints we released:
+1. `config/generation_config/52m_gen.yaml` for the 52M DiT trained with AvgFlow objective.
+2. `config/generation_config/64m_gen.yaml` for the 64M DiT trained with AvgFlow objective.
+3. `config/generation_config/52m_distill_gen.yaml` for the 52M DiT finetuned with reflow+distillation for 1-step generation.
+
+Please choose the config based on your your checkpoint choice, and note that the distilled checkpoint **only** works with 1-step generation.
+
+## Training
+### Preparation of training data
+
+### Launch training
 
 ## License
 Copyright @ 2025, NVIDIA Corporation. All rights reserved.<br>

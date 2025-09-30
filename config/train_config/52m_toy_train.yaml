@@ -1,7 +1,7 @@
-data_root_dir: /home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/example/
+data_root_dir: ./example/data
 data_file_name: train_toy_mols.pkl
 # Define where to save the checkpoint
-checkpoint_dir: /home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/example/checkpoints
+checkpoint_dir: ./example/checkpoints
 run_name: 52m_toydata_train
 
 model:
@@ -46,5 +46,5 @@ validation:
 
 wandb:
   use_wandb: True
-  project: confgen
-  entity: zhonglinc
+  project: confgen # YOUR WANDB PROJECT NAME
+  entity: zhonglinc # YOUR WANDB ENTITY
