@@ -3,6 +3,10 @@
 
 This is the official code repository for the paper titled [Efficient Molecular Conformer Generation with SO(3) Averaged Flow-Matching and Reflow](https://arxiv.org/abs/2507.09785) (ICML 2025).
 
+<p align="center">
+    <img width="750" src="assets/main.png"/>
+</p>
+
 ## Contribution
 + We propose SO(3)-*Averaged Flow*: A novel flow-matching objective that analytically compute the probability flow from noise to all rotations of the data. When the "correctness" of samples is rotational invariant (such as conformer generation), SO(3)-*Averaged Flow* improves training efficiency by eliminating the need of rotational data augmentation and further improves model performance.
 + We propose to use reflow+distillation to reduce the number of sampling steps of flow-based model for conformer generation and maintain high generation quality.
@@ -72,11 +76,11 @@ Please choose the config based on your your checkpoint choice, and note that the
 ### Preparation of training data
 Each molecule with ground truth conformers in the dataset has to be preprocessed before training. We recommend to have a dictionary for each molecule that contains at least 2 keys: 
 1. `features`: Features computed from the 2D molecular graph using `data_preprocessing.preprocess.mol2features`
-1. `conformers`: np.array with dimension [C, N, 3], where C is the number of conformers and N is the number of atoms in the molecule. 
+1. `conformers`: np.array with dimension `[C, N, 3]`, where `C` is the number of conformers and `N` is the number of atoms in the molecule. 
 
 For reflow/distill finetuning which requires ($X'_0$, $X'_1$) pairs, we recommend the preprocessed dictionary to contain 2 other keys instead of `conformer`:
-1. `x0s`: np.array with dimension [C, N, 3], where C is the number of ($X'_0$, $X'_1$) pairs and N is the number of atoms in the molecule. Gaussian noise at $t=0$.
-1. `x1s`: np.array with dimension [C, N, 3], where C is the number of ($X'_0$, $X'_1$) pairs and N is the number of atoms in the molecule. Model generated conformer at $t=1$ from each corresponding `x0s`. 
+1. `x0s`: np.array with dimension `[C, N, 3]`, where `C` is the number of ($X'_0$, $X'_1$) pairs and `N` is the number of atoms in the molecule. Gaussian noise at $t=0$.
+1. `x1s`: np.array with dimension `[C, N, 3]`, where `C` is the number of ($X'_0$, $X'_1$) pairs and `N` is the number of atoms in the molecule. Model generated conformer at $t=1$ from each corresponding `x0s`. 
 
 Please refer to `example/data/generate_toy_dataset.ipynb` for example of creating the toy training and finetuning datasets.
 
