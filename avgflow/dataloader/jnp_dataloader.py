@@ -386,26 +386,3 @@ class SingleGenerationLoader:
         if len(x.shape) == 3:
             return jnp.pad(x, ((0, 0), (0, N-x.shape[1]), (0, 0))) if x.shape[0] < N else x
         raise ValueError("Only support 1D, 2D, or 3D array")
-
-# if __name__ == "__main__":
-#     data_root_dir = '/home/zhonglinc/storage/research/conformer/data/geom/drugs_noH/'
-#     smiles_splits = np.load(data_root_dir+'split/split0_clean.npy', allow_pickle=True)
-#     train_smiles, _, _ = smiles_splits
-#     train_smiles = train_smiles[4]
-#     print(train_smiles)
-
-#     graph, conformers, _ = load_single_geom_drugs((data_root_dir, train_smiles))
-#     print(graph.edges)
-#     # for i in range(len(graph.senders)):
-#     #     print(graph.senders[i], '->', graph.receivers[i])
-#     print(graph.edges['features'].shape)
-#     print(len(graph.senders), graph.nodes['features'].shape)
-#     print(graph.nodes.keys())
-#     print(jnp.argmax(graph.edges['features'], axis=1).shape)
-#     # print(graph.senders)
-#     dataloader = SingleGenerationLoader(graph, max_n=64)
-#     @jax.jit
-#     def get_batch_data():
-#         return dataloader.get_batch()
-#     batch = get_batch_data()
-#     print(batch['t'])
