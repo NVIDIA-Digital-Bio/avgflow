@@ -1,17 +1,16 @@
-data_root_dir: /home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/example/
-checkpoint_path: /home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/checkpoints/avgflow_52m_760ep_ckpt.pkl
-destination_dir: /home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/example/generated
-run_name: 52m_gen
+checkpoint_path: ./checkpoints/avgflow_52m_ckpt.pkl
+output_dir: ./example/output
+run_name: avgflow_52m
 
 use_ema: true
 solver: euler # tsit5 or euler
 rtol: 1e-5 # only use when using tsit5 solver
 atol: 1e-4 # only use when using tsit5 solver
 only_save_last: false
-n_steps: 50 # not use when using tsit5 solver
+n_steps: 100 # not use when using tsit5 solver
 t_schedule: uniform # uniform or log
 t_p: 2.0 # Not used for uniform t-schedule, only used for log t-schedule
-featurize_mode: drugs # or qm9
+featurize_mode: drugs # Featurization mode for model trained with GEOM-Drugs dataset
 random_seed: 42
 
 model:

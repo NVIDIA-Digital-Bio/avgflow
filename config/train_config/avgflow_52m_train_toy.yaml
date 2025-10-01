@@ -1,8 +1,8 @@
 data_root_dir: ./example/data
 data_file_name: train_toy_mols.pkl
 # Define where to save the checkpoint
-checkpoint_dir: ./example/checkpoints
-run_name: 52m_toydata_train
+checkpoint_dir: ./example/train/checkpoints
+run_name: avgflow_52m_toydata_train
 
 model:
   batchsize: 4

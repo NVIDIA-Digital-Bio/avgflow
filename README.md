@@ -21,10 +21,22 @@ conda activate avgflow
 ```
 
 ## Pretrained Checkpoint
-We provide 3 model weights through the NVIDIA NGC, including: 52M DiT trained with AvgFlow objective, 52M DiT finetuned with reflow+distillation for 1-step generation, and 64M DiT trained with AvgFlow objective. Run the following command to download the checkpoints:
+We provide 3 model weights through the NVIDIA NGC, including: 
+1. 52M DiT trained with AvgFlow objective ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_ckpt?version=avgflow_52m_ckpt))
+1. 52M DiT finetuned with reflow for few-step generation ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_reflow_ckpt?version=avgflow_52m_reflow_ckpt))
+1. 52M DiT finetuned with reflow+distillation for 1-step generation ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_distill_ckpt?version=avgflow_52m_distill_ckpt))
+1. 64M DiT trained with AvgFlow objective. ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_64m_ckpt?version=avgflow_64m_ckpt))
+
+If you have [NGC CLI tool](https://docs.ngc.nvidia.com/cli/cmd.html) installed, you can run the following command to download the checkpoints:
 ```bash
 bash scripts/download_ckpts.sh
 ```
+
+Otherwise, you can create a checkpoints directory by:
+```bash
+mkdir -p checkpoints
+```
+and downdload the checkpoints from the NGC pages above. 
 
 ## Sampling
 The model can be used to generate conformers given: 1. a single SMILES string, or 2. a CSV file containing a batch of SMILES strings and the number of conformers to be generated for each molecule. 
