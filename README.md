@@ -14,9 +14,10 @@ git clone https://github.com/NVIDIA-Digital-Bio/avgflow.git
 cd avgflow
 ```
 
-Run the following command to install the dependencies:
+Run the following command to create a conda environment and install the dependencies:
 ```bash
-bash env/setup.sh
+conda env create -f env.yml
+conda activate avgflow
 ```
 
 ## Pretrained Checkpoint
