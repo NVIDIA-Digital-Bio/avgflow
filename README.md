@@ -69,8 +69,27 @@ Please choose the config based on your your checkpoint choice, and note that the
 
 ## Training
 ### Preparation of training data
+Each molecule with ground truth conformers in the dataset has to be preprocessed before training. We recommend to have a dictionary for each molecule that contains at least 2 keys: 
+1. `features`: Features computed from the 2D molecular graph using `data_preprocessing.preprocess.mol2features`
+1. `conformers`: np.array with dimension [C, N, 3], where C is the number of conformers and N is the number of atoms in the molecule. 
+
+For reflow/distill finetuning which requires ($X'_0$, $X'_1$) pairs, we recommend the preprocessed dictionary to contain 2 other keys instead of `conformer`:
+1. `x0s`: np.array with dimension [C, N, 3], where C is the number of ($X'_0$, $X'_1$) pairs and N is the number of atoms in the molecule. Gaussian noise at $t=0$.
+1. `x1s`: np.array with dimension [C, N, 3], where C is the number of ($X'_0$, $X'_1$) pairs and N is the number of atoms in the molecule. Model generated conformer at $t=1$ from each corresponding `x0s`. 
+
+Please refer to `example/data/generate_toy_dataset.ipynb` for example of creating the toy training and finetuning datasets.
 
 ### Launch training
+Follow the following steps to launch training:
+1. Prepare dataset as illustrated above.
+1. Prepare training config. See example in `config/train_config/avgflow_52m_train_toy.yaml`. 
+1. (Optional) Change how the preprocessed dataset is loaded in `avgflow/train.py` line 45-58. You may parallelize the data loading for large training dataset.
+1. Launch training (see example in `example/train/train_toy.sh`) with:
+```
+python avgflow/train.py --config PATH/TO/CONFIG.yaml 
+``` 
+
+Follow the same procedure and use `avgflow/reflow_finetune.py` for finetuning.
 
 ## License
 Copyright @ 2025, NVIDIA Corporation. All rights reserved.<br>

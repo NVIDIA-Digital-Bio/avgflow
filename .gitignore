@@ -1,6 +1,5 @@
 wandb/
 slurm_run_outputs/
 checkpoints/*
-*.ipynb
 *__pycache__/
 *.pyc
