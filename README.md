@@ -20,7 +20,7 @@ conda env create -f env.yml
 conda activate avgflow
 ```
 
-## Pretrained Checkpoint
+## Pretrained Checkpoints
 We provide 3 model weights through the NVIDIA NGC, including: 
 1. 52M DiT trained with AvgFlow objective ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_ckpt?version=avgflow_52m_ckpt))
 1. 52M DiT finetuned with reflow for few-step generation ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_reflow_ckpt?version=avgflow_52m_reflow_ckpt))
@@ -60,10 +60,11 @@ python avgflow/generate_from_csv.py \
 ```
 Example can be found in `example/sampling/example_generate_from_csv.sh`, which generate various number of conformers for molecules in `/example/data/toy_gen_csv.csv`. Please follow the format of `/example/data/toy_gen_csv.csv` to construct your own csv for sampling. 
 
-The config yaml files define the model architecture to be initilized and checkpoint to be loaded. We provide 3 config files for the 3 checkpoints we released:
-1. `config/generation_config/52m_gen.yaml` for the 52M DiT trained with AvgFlow objective.
-2. `config/generation_config/64m_gen.yaml` for the 64M DiT trained with AvgFlow objective.
-3. `config/generation_config/52m_distill_gen.yaml` for the 52M DiT finetuned with reflow+distillation for 1-step generation.
+The config yaml files define the model architecture to be initilized and checkpoint to be loaded. We provide 4 config files for the 4 checkpoints we released:
+1. `config/generation_config/avgflow_52m_gen.yaml` for the 52M DiT trained with AvgFlow objective.
+2. `config/generation_config/avgflow_64m_gen.yaml` for the 64M DiT trained with AvgFlow objective.
+3. `config/generation_config/avgflow_52m_reflow_gen.yaml` for the 52M DiT finetuned with reflow for few-step generation.
+4. `config/generation_config/avgflow_52m_distill_gen.yaml` for the 52M DiT finetuned with reflow+distillation for 1-step generation.
 
 Please choose the config based on your your checkpoint choice, and note that the distilled checkpoint **only** works with 1-step generation.
 
