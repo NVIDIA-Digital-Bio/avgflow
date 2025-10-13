@@ -3,7 +3,7 @@
 ## Description:  
 AvgFlow as released in this repository is a diffusion transformer model with pairwise biased attention trained on 3-dimensional conformer data of small molecules. It can be used as a highly efficient molecular conformer generator.
  
-_This model is for research and development only._  
+_This model is ready for commercial use._  
 
 
 ### License/Terms of Use:   
