@@ -8,10 +8,10 @@ This is the official code repository for the paper titled [Efficient Molecular C
 </p>
 
 ## Contribution
-+ We propose SO(3)-*Averaged Flow*: A novel flow-matching objective that analytically compute the probability flow from noise to all rotations of the data. When the "correctness" of samples is rotational invariant (such as conformer generation), SO(3)-*Averaged Flow* improves training efficiency by eliminating the need of rotational data augmentation and further improves model performance.
++ We propose SO(3)-*Averaged Flow*: A novel flow-matching objective that analytically computes the probability flow from noise to all rotations of the data. When the "correctness" of samples is rotational invariant (such as conformer generation), SO(3)-*Averaged Flow* improves training efficiency by eliminating the need for rotational data augmentation and further improves model performance.
 + We propose to use reflow+distillation to reduce the number of sampling steps of flow-based model for conformer generation and maintain high generation quality.
 + We provide a JAX implementation of the diffusion transformer with pairwise biased attention architecture. It is powerful and scalable for generative modeling of molecules. 
-## Instalation
+## Installation
 Clone this repository:
 ```bash
 git clone https://github.com/NVIDIA-Digital-Bio/avgflow.git
@@ -40,7 +40,7 @@ Otherwise, you can create a checkpoints directory by:
 ```bash
 mkdir -p checkpoints
 ```
-and downdload the checkpoints from the NGC pages above. 
+and download the checkpoints from the NGC pages above. 
 
 ## Sampling
 The model can be used to generate conformers given: 1. a single SMILES string, or 2. a CSV file containing a batch of SMILES strings and the number of conformers to be generated for each molecule. 
@@ -53,7 +53,7 @@ python avgflow/generate_from_smiles.py \
     --num_confs N_CONF \
     --output_dir PATH/TO/OUTPUT/DIRECTORY \
 ```
-Example can be found in `example/sampling/example_generate_from_smiles.sh`, which generete 64 conformers for molecule `C#CCNC(=O)C1=C[C@@H](c2ccc(Br)cc2)C[C@@H](OCc2ccc(CO)cc2)O1`.
+Example can be found in `example/sampling/gen_smiles.sh`, which generates 40 conformers for molecule `C#CCNC(=O)C1=C[C@@H](c2ccc(Br)cc2)C[C@@H](OCc2ccc(CO)cc2)O1`.
 
 For conformer generation of a batch of molecules in a csv file, run:
 ```
@@ -62,15 +62,15 @@ python avgflow/generate_from_csv.py \
     --smiles_csv PATH/TO/SMILES.csv \
     --output_dir PATH/TO/OUTPUT/DIRECTORY \
 ```
-Example can be found in `example/sampling/example_generate_from_csv.sh`, which generate various number of conformers for molecules in `/example/data/toy_gen_csv.csv`. Please follow the format of `/example/data/toy_gen_csv.csv` to construct your own csv for sampling. 
+Example can be found in `example/sampling/gen_csv.sh`, which generate various number of conformers for molecules in `example/data/toy_gen_csv.csv`. Please follow the format of `example/data/toy_gen_csv.csv` to construct your own csv for sampling. 
 
-The config yaml files define the model architecture to be initilized and checkpoint to be loaded. We provide 4 config files for the 4 checkpoints we released:
+The config yaml files define the model architecture to be initialized and checkpoint to be loaded. We provide 4 config files for the 4 checkpoints we released:
 1. `config/generation_config/avgflow_52m_gen.yaml` for the 52M DiT trained with AvgFlow objective.
 2. `config/generation_config/avgflow_64m_gen.yaml` for the 64M DiT trained with AvgFlow objective.
 3. `config/generation_config/avgflow_52m_reflow_gen.yaml` for the 52M DiT finetuned with reflow for few-step generation.
 4. `config/generation_config/avgflow_52m_distill_gen.yaml` for the 52M DiT finetuned with reflow+distillation for 1-step generation.
 
-Please choose the config based on your your checkpoint choice, and note that the distilled checkpoint **only** works with 1-step generation.
+Please choose the config based on your checkpoint choice, and note that the distilled checkpoint **only** works with 1-step generation.
 
 ## Training
 ### Preparation of training data
