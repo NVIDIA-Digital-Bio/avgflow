@@ -18,7 +18,7 @@ AvgFlow is a model for efficient molecular conformer generation. The model can b
 ### Release Date:   
 **Github:** 10/15/2025 via https://github.com/NVIDIA/avgflow   
 
-**NGC:** 10/15/2025 via 
+**NGC:** 10/15/2025 via https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/collections/avgflow
 
 ## Reference(s):
 Research paper: "Efficient Molecular Conformer Generation with
