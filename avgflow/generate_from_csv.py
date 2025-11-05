@@ -25,8 +25,7 @@ from utils.rdkit_utils import add_conformer_to_mol, SMILES_to_safeSMILES
 from tqdm import tqdm
 import yaml, argparse
 import sys
-sys.path.append('/home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/data_preprocessing')
-from preprocess import mol2features
+from dataloader.preprocess import mol2features
 from utils.rdkit_utils import post_hoc_flip_mol
 from rdkit import Chem
 

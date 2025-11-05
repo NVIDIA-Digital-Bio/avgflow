@@ -9,7 +9,7 @@ from rdkit import Chem
 import numpy as np
 import copy
 
-from data_utils import get_atom_features, get_bond_features, get_laplacian_pe, one_hot_encoding
+from .data_utils import get_atom_features, get_bond_features, get_laplacian_pe, one_hot_encoding
 from functools import partial
 from multiprocessing import Pool
 

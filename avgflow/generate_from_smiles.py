@@ -40,8 +40,7 @@ from tqdm import tqdm
 from collections import defaultdict
 import yaml, argparse
 import sys
-sys.path.append('/home/zhonglinc/storage/research/avgflow_release/dit_pairwise_bias/data_preprocessing')
-from preprocess import mol2features
+from dataloader.preprocess import mol2features
 from utils.rdkit_utils import post_hoc_flip_mol
 from rdkit import Chem
 
