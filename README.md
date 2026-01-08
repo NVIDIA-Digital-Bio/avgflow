@@ -25,7 +25,7 @@ conda activate avgflow
 ```
 
 ## Pretrained Checkpoints
-We provide 3 model weights through the NVIDIA NGC, including: 
+We provide 4 model weights through the NVIDIA NGC, including: 
 1. 52M DiT trained with AvgFlow objective ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_ckpt?version=avgflow_52m_ckpt))
 1. 52M DiT finetuned with reflow for few-step generation ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_reflow_ckpt?version=avgflow_52m_reflow_ckpt))
 1. 52M DiT finetuned with reflow+distillation for 1-step generation ([Link](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/clara/resources/avgflow_52m_distill_ckpt?version=avgflow_52m_distill_ckpt))
